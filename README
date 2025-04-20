@@ -1,1 +1,22 @@
-Serpent encryption in python - credits in script, also included CBC encrypt and decrypt functionality
+# pyserpent
+
+Pure Python implementation of the Serpent block cipher with CBC mode and PKCS#7 padding.
+
+## Install
+
+```bash
+pip install pyserpent
+
+## Example
+
+from pyserpent import Serpent, serpent_cbc_encrypt, serpent_cbc_decrypt
+
+key = Serpent.generate_key()
+iv = Serpent.generateIV()
+data = "Hello, Serpent!"
+
+encrypted = serpent_cbc_encrypt(key, data, iv)
+decrypted = serpent_cbc_decrypt(key, encrypted, iv)
+
+print(decrypted.decode())
+

@@ -3044,19 +3044,3 @@ def serpent_cbc_decrypt(key, data, iv=b'\x00' * 16):
         out2 += to_decode
         last = data[i * 16:(i + 1) * 16]
     return Serpent.pkcs7_unpad(out2)
-
-
-if __name__ == "__main__":
-    key = b'0123456789abcdef'
-    iv = Serpent.generateIV()
-
-    original = "1244214123б,Выф вфы"
-    encrypted = serpent_cbc_encrypt(key, original, iv)
-    decrypted = serpent_cbc_decrypt(key, encrypted, iv)
-
-    print("Original:", original)
-    print("Encrypted (hex):", encrypted.hex())
-    print("Decrypted:", decrypted.decode('utf-8'))
-
-    assert decrypted.decode('utf-8') == original
-    print("✅ CBC-тест пройден.")
