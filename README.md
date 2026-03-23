@@ -1,6 +1,6 @@
 # pyserpent
 
-[![PyPI version](https://badge.fury.io/py/pyserpent.svg)](https://badge.fury.io/py/pyserpent)
+[![PyPI version](https://img.shields.io/pypi/v/pyserpent.svg)](https://pypi.org/project/pyserpent/)
 [![PyPI Downloads](https://static.pepy.tech/personalized-badge/pyserpent?period=total&units=INTERNATIONAL_SYSTEM&left_color=BLACK&right_color=GREEN&left_text=downloads)](https://pepy.tech/projects/pyserpent)
 
 Pure Python implementation of the Serpent block cipher with ECB, CBC mode and PKCS#7 padding.
