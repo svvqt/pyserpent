@@ -1,11 +1,11 @@
 from setuptools import setup, find_packages
 
-with open("README", "r", encoding="utf-8") as fh:
+with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 setup(
     name='pyserpent',
-    version='1.0.1',
+    version='1.1.0',
     description='Pure Python implementation of the Serpent block cipher with CBC mode and PKCS#7 padding',
     author='svvqt',
     author_email='kon.vitkovskii@gmail.com',
