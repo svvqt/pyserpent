@@ -32,14 +32,6 @@
 ## This file may be freely used, modified, and redistributed,
 ## provided that this copyright notice and attribution are preserved.
 
-try:
-    import psyco
-    psyco.full()
-except ImportError:
-    pass
-
-import binascii
-import base64
 import struct
 import sys
 import os
@@ -51,7 +43,7 @@ key_size = 32
 class Serpent:
     
     def __init__(self, key:bytes=None):
-        """Serpent."""
+        """Class for using Serpent algorithm"""
         
         if key:
             self.set_key(key)
@@ -74,7 +66,7 @@ class Serpent:
             key = key[4:]
             i += 1
 
-        set_key(self.key_context, key_word32, key_len)       
+        _set_key(self.key_context, key_word32, key_len)       
        
     def decrypt(self, data: bytes):
         """Decrypt blocks."""
@@ -87,7 +79,7 @@ class Serpent:
         while data:
             a, b, c, d = struct.unpack("<4L", data[:16])
             temp = [a, b, c, d]
-            decrypt(self.key_context, temp)
+            _decrypt(self.key_context, temp)
             plaintext += struct.pack("<4L", *temp)
             data = data[16:]
             
@@ -104,7 +96,7 @@ class Serpent:
         while data:
             a, b, c, d = struct.unpack("<4L", data[0:16])
             temp = [a, b, c, d]
-            encrypt(self.key_context, temp)
+            _encrypt(self.key_context, temp)
             ciphertext += struct.pack("<4L", *temp)
             data = data[16:]
             
@@ -151,11 +143,11 @@ class Serpent:
     def get_key_size(self):
         """Get cipher key size in bytes."""
         
-        return len(self.key_context)
+        return 32
     
     
 #
-# Below code needs for working Serpent alghorithm.
+# Below code needs for working Serpent algorithm.
 # 
 #
 
@@ -164,31 +156,31 @@ if sys.byteorder == 'big':
     WORD_BIGENDIAN = 1
 
 
-def rotr32(x, n):
+def _rotr32(x, n):
     return (x >> n) | ((x << (32 - n)) & 0xFFFFFFFF)
 
 
-def rotl32(x, n):
+def _rotl32(x, n):
     return ((x << n) & 0xFFFFFFFF) | (x >> (32 - n))
 
 
-def byteswap32(x):
+def _byteswap32(x):
     return ((x & 0xff) << 24) | (((x >> 8) & 0xff) << 16) | \
            (((x >> 16) & 0xff) << 8) | ((x >> 24) & 0xff)
 def inv_linear_transformation(x0, x1, x2, x3):
-    x2 = rotr32(x2, 22)
-    x0 = rotr32(x0, 5)
+    x2 = _rotr32(x2, 22)
+    x0 = _rotr32(x0, 5)
     x2 ^= x3 ^ ((x1 << 7) & 0xFFFFFFFF)
     x0 ^= x1 ^ x3
-    x3 = rotr32(x3, 7)
-    x1 = rotr32(x1, 1)
+    x3 = _rotr32(x3, 7)
+    x1 = _rotr32(x1, 1)
     x3 ^= x2 ^ ((x0 << 3) & 0xFFFFFFFF)
     x1 ^= x0 ^ x2
-    x2 = rotr32(x2, 3)
-    x0 = rotr32(x0, 13)
+    x2 = _rotr32(x2, 3)
+    x0 = _rotr32(x0, 13)
     return x0, x1, x2, x3
 
-def inbox0(a, b, c, d):
+def _inbox0(a, b, c, d):
     t1 = (~a) % 0x100000000
     t2 = a ^ b
     t3 = t1 | t2
@@ -206,7 +198,7 @@ def inbox0(a, b, c, d):
     e = h ^ t14
     return e, f, g, h
 
-def inbox1(a, b, c, d):
+def _inbox1(a, b, c, d):
     t1 = a ^ d     
     t2 = a & b     
     t3 = b ^ c     
@@ -226,7 +218,7 @@ def inbox1(a, b, c, d):
     e = t15 ^ t16
     return e, f, g, h
 
-def inbox2(a, b, c, d):
+def _inbox2(a, b, c, d):
     t1 = b ^ d
     t2 = (~t1) % 0x100000000
     t3 = a ^ c
@@ -245,7 +237,7 @@ def inbox2(a, b, c, d):
     g = t14 ^ t15
     return e, f, g, h
 
-def inbox3(a, b, c, d):
+def _inbox3(a, b, c, d):
     t1 = b ^ c     
     t2 = b | c     
     t3 = a ^ c     
@@ -265,7 +257,7 @@ def inbox3(a, b, c, d):
     h = t4 ^ t16
     return e, f, g, h
 
-def inbox4(a, b, c, d):
+def _inbox4(a, b, c, d):
     t1 = c ^ d     
     t2 = c | d     
     t3 = b ^ t2    
@@ -285,7 +277,7 @@ def inbox4(a, b, c, d):
     g = t15 ^ t16
     return e, f, g, h
 
-def inbox5(a, b, c, d):
+def _inbox5(a, b, c, d):
     t1 = (~c) % 0x100000000
     t2 = b & t1    
     t3 = d ^ t2    
@@ -304,7 +296,7 @@ def inbox5(a, b, c, d):
     g = t14 ^ t15
     return e, f, g, h
 
-def inbox6(a, b, c, d):
+def _inbox6(a, b, c, d):
     t1 = (~a) % 0x100000000        
     t2 = a ^ b     
     t3 = c ^ t2    
@@ -322,7 +314,7 @@ def inbox6(a, b, c, d):
     g = t13 ^ t14
     return e, f, g, h
 
-def inbox7(a, b, c, d):
+def _inbox7(a, b, c, d):
     t1 = a & b     
     t2 = a | b     
     t3 = c | t1    
@@ -342,24 +334,24 @@ def inbox7(a, b, c, d):
     g = t15 ^ t16
     return e, f, g, h
 
-inv_boxes = (inbox0, inbox1, inbox2, inbox3, inbox4, inbox5, inbox6, inbox7)
+inv_boxes = (_inbox0, _inbox1, _inbox2, _inbox3, _inbox4, _inbox5, _inbox6, _inbox7)
 
 
 
-def linear_transformation(x0, x1, x2, x3):
-    x0 = rotl32(x0, 13)
-    x2 = rotl32(x2, 3)
+def _linear_transformation(x0, x1, x2, x3):
+    x0 = _rotl32(x0, 13)
+    x2 = _rotl32(x2, 3)
     x3 ^= x2 ^ ((x0 << 3) & 0xFFFFFFFF)
     x1 ^= x0 ^ x2
-    x3 = rotl32(x3, 7)
-    x1 = rotl32(x1, 1)
+    x3 = _rotl32(x3, 7)
+    x1 = _rotl32(x1, 1)
     x0 ^= x1 ^ x3
     x2 ^= x3 ^ ((x1 << 7) & 0xFFFFFFFF)
-    x0 = rotl32(x0, 5)
-    x2 = rotl32(x2, 22)
+    x0 = _rotl32(x0, 5)
+    x2 = _rotl32(x2, 22)
     return x0, x1, x2, x3
 
-def sbox0(a, b, c, d):
+def _sbox0(a, b, c, d):
     t1 = a ^ d     
     t2 = a & d     
     t3 = c ^ t1    
@@ -377,7 +369,7 @@ def sbox0(a, b, c, d):
     e = t12 ^ t14
     return e, f, g, h
 
-def sbox1(a, b, c, d):
+def _sbox1(a, b, c, d):
     t1 = (~a) % 0x100000000      
     t2 = b ^ t1
     t3 = a | t2    
@@ -394,7 +386,7 @@ def sbox1(a, b, c, d):
     e = t5 ^ t13
     return e, f, g, h
 
-def sbox2(a, b, c, d):
+def _sbox2(a, b, c, d):
     t1 = (~a) % 0x100000000        
     t2 = b ^ d     
     t3 = c & t1    
@@ -413,7 +405,7 @@ def sbox2(a, b, c, d):
     f = t14 ^ t15
     return e, f, g, h
 
-def sbox3(a, b, c, d):
+def _sbox3(a, b, c, d):
     t1 = a ^ c     
     t2 = d ^ t1    
     t3 = a & t2    
@@ -433,7 +425,7 @@ def sbox3(a, b, c, d):
     e = t12 ^ t16
     return e, f, g, h
 
-def sbox4(a, b, c, d):
+def _sbox4(a, b, c, d):
     t1 = a ^ d     
     t2 = d & t1    
     t3 = c ^ t2    
@@ -451,7 +443,7 @@ def sbox4(a, b, c, d):
     f = t13 ^ t14
     return e, f, g, h
 
-def sbox5(a, b, c, d):
+def _sbox5(a, b, c, d):
     t1 = (~a) % 0x100000000        
     t2 = a ^ b     
     t3 = a ^ d     
@@ -470,7 +462,7 @@ def sbox5(a, b, c, d):
     h = t14 ^ t15
     return e, f, g, h
 
-def sbox6(a, b, c, d):
+def _sbox6(a, b, c, d):
     t1 = (~a) % 0x100000000        
     t2 = a ^ d     
     t3 = b ^ t2    
@@ -488,7 +480,7 @@ def sbox6(a, b, c, d):
     h = t13 ^ t14
     return e, f, g, h
 
-def sbox7(a, b, c, d):
+def _sbox7(a, b, c, d):
     t1 = (~c) % 0x100000000      
     t2 = b ^ c     
     t3 = b | t1    
@@ -508,9 +500,9 @@ def sbox7(a, b, c, d):
     e = t15 ^ t16
     return e, f, g, h
 
-sboxes = (sbox0, sbox1, sbox2, sbox3, sbox4, sbox5, sbox6, sbox7)
+sboxes = (_sbox0, _sbox1, _sbox2, _sbox3, _sbox4, _sbox5, _sbox6, _sbox7)
 
-def set_key(l_key, key, key_len):
+def _set_key(l_key, key, key_len):
     key_len *= 8
     if key_len > 256:
         return False
@@ -520,7 +512,7 @@ def set_key(l_key, key, key_len):
     while i < lk:
         l_key[i] = key[i]
         if WORD_BIGENDIAN:
-            l_key[i] = byteswap32(key[i])
+            l_key[i] = _byteswap32(key[i])
         i += 1
         
     if key_len < 256:
@@ -543,14 +535,14 @@ def set_key(l_key, key, key_len):
 
 
 
-def encrypt(key_context, in_blk):
+def _encrypt(key_context, in_blk):
     a, b, c, d = in_blk[0], in_blk[1], in_blk[2], in_blk[3]
 
     if WORD_BIGENDIAN:
-        a = byteswap32(a)
-        b = byteswap32(b)
-        c = byteswap32(c)
-        d = byteswap32(d)
+        a = _byteswap32(a)
+        b = _byteswap32(b)
+        c = _byteswap32(c)
+        d = _byteswap32(d)
 
     for i in range(32):
         a ^= key_context[4 * i + 8]
@@ -562,7 +554,7 @@ def encrypt(key_context, in_blk):
         a, b, c, d = sbox_func(a, b, c, d)
 
         if i<31:
-            a, b, c, d = linear_transformation(a, b, c, d)
+            a, b, c, d = _linear_transformation(a, b, c, d)
 
     a ^= key_context[4 * 32 + 8]
     b ^= key_context[4 * 32 + 9]
@@ -570,26 +562,26 @@ def encrypt(key_context, in_blk):
     d ^= key_context[4 * 32 + 11]
 
     if WORD_BIGENDIAN:
-        a = byteswap32(a)
-        b = byteswap32(b)
-        c = byteswap32(c)
-        d = byteswap32(d)
+        a = _byteswap32(a)
+        b = _byteswap32(b)
+        c = _byteswap32(c)
+        d = _byteswap32(d)
 
     in_blk[0] = a
     in_blk[1] = b
     in_blk[2] = c
     in_blk[3] = d
 
-def decrypt(key, in_blk):
+def _decrypt(key, in_blk):
     a = in_blk[0]
     b = in_blk[1]
     c = in_blk[2]
     d = in_blk[3]
     if WORD_BIGENDIAN:
-        a = byteswap32(a)
-        b = byteswap32(b)
-        c = byteswap32(c)
-        d = byteswap32(d)
+        a = _byteswap32(a)
+        b = _byteswap32(b)
+        c = _byteswap32(c)
+        d = _byteswap32(d)
     a ^= key[4 * 32 +  8]
     b ^= key[4 * 32 +  9]
     c ^= key[4 * 32 + 10]
@@ -607,17 +599,17 @@ def decrypt(key, in_blk):
         d ^= key[4 * i + 11]
     
     if WORD_BIGENDIAN:
-        a = byteswap32(a)
-        b = byteswap32(b)
-        c = byteswap32(c)
-        d = byteswap32(d)    
+        a = _byteswap32(a)
+        b = _byteswap32(b)
+        c = _byteswap32(c)
+        d = _byteswap32(d)    
     in_blk[0] = a
     in_blk[1] = b
     in_blk[2] = c
     in_blk[3] = d
 
 
-def serpent_cbc_encrypt(key, data, iv=b'\x00' * 16):
+def serpent_cbc_encrypt(key: bytes, data: bytes | str, iv = None):
     """
     Encrypt data using Serpent in CBC mode with PKCS#7 padding.
 
@@ -626,12 +618,14 @@ def serpent_cbc_encrypt(key, data, iv=b'\x00' * 16):
     :param iv: initialization vector (16 bytes)
     :return: ciphertext (bytes)
     """
+    
     if isinstance(data, str):
         data = data.encode('utf-8')
     
     data = Serpent.pkcs7_pad(data)
     out = b''
-    last = iv
+    _iv = Serpent.generateIV() if iv is None else iv
+    last = _iv
     for i in range(len(data) // 16):
         temp = data[i * 16:(i + 1) * 16]
         to_encode = b''
@@ -641,37 +635,40 @@ def serpent_cbc_encrypt(key, data, iv=b'\x00' * 16):
             to_encode += struct.pack('<I', (temp1 ^ temp2) & 0xffffffff)
         last = Serpent(key).encrypt(to_encode)
         out += last
-    return out
+    return _iv + out
 
 
-def serpent_cbc_decrypt(key, data, iv=b'\x00' * 16):
+def serpent_cbc_decrypt(key: bytes, data: bytes):
     """
     Decrypt data using Serpent in CBC mode with PKCS#7 unpadding.
 
     :param key: encryption key (bytes)
     :param data: ciphertext (bytes)
-    :param iv: initialization vector (16 bytes)
     :return: plaintext (bytes)
     """
+    
     out2 = b''
-    last = iv
-    for i in range(len(data) // 16):
-        temp = Serpent(key).decrypt(data[i * 16:(i + 1) * 16])
+    last = data[:16]
+    ciphertext = data[16:]
+    for i in range(len(ciphertext) // 16):
+        temp = Serpent(key).decrypt(ciphertext[i * 16:(i + 1) * 16])
         to_decode = b''
         for j in range(4):
             temp1 = struct.unpack_from('<I', temp[j * 4:])[0]
             temp2 = struct.unpack_from('<I', last[j * 4:])[0]
             to_decode += struct.pack('<I', (temp1 ^ temp2) & 0xffffffff)
         out2 += to_decode
-        last = data[i * 16:(i + 1) * 16]
+        last = ciphertext[i * 16:(i + 1) * 16]
     return Serpent.pkcs7_unpad(out2)
 
 if __name__ == "__main__":
     serpent = Serpent()
     key = b"0000000000000000"
-    plaintext = "Hello, Serpent!"
+    plaintext = "aaaeerggdddaswr1234"
+    iv = b"\x00" * 16
 
-    ciphertext = serpent_cbc_encrypt(key, plaintext)
+    ciphertext = serpent_cbc_encrypt(key, plaintext, iv)
     decrypted = serpent_cbc_decrypt(key, ciphertext)
 
-    print(ciphertext.hex())
+    print(ciphertext[16:].hex())
+    print(decrypted.decode())
