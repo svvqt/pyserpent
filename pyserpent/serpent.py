@@ -609,14 +609,14 @@ def _decrypt(key, in_blk):
     in_blk[3] = d
 
 
-def serpent_cbc_encrypt(key: bytes, data: bytes | str, iv = None):
+def serpent_cbc_encrypt(key: bytes, data: bytes | str, iv = None) -> bytes:
     """
     Encrypt data using Serpent in CBC mode with PKCS#7 padding.
 
     :param key: encryption key (bytes)
     :param data: plaintext (bytes or str)
     :param iv: initialization vector (16 bytes)
-    :return: ciphertext (bytes)
+    :return: iv + ciphertext (bytes)
     """
     
     if isinstance(data, str):
@@ -638,7 +638,7 @@ def serpent_cbc_encrypt(key: bytes, data: bytes | str, iv = None):
     return _iv + out
 
 
-def serpent_cbc_decrypt(key: bytes, data: bytes):
+def serpent_cbc_decrypt(key: bytes, data: bytes) -> bytes:
     """
     Decrypt data using Serpent in CBC mode with PKCS#7 unpadding.
 

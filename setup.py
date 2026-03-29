@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name='pyserpent',
-    version='1.1.0',
+    version='1.2.0',
     description='Pure Python implementation of the Serpent block cipher with CBC mode and PKCS#7 padding',
     author='svvqt',
     author_email='kon.vitkovskii@gmail.com',
