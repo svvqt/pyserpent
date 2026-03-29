@@ -35,10 +35,10 @@ print(decrypted.decode())
 from pyserpent import Serpent, serpent_cbc_encrypt, serpent_cbc_decrypt
 
 key = Serpent.generate_key()
-iv = Serpent.generateIV()
 plaintext = "Hello, Serpent!!"
 
-ciphertext = serpent_cbc_encrypt(key, plaintext, iv)
+# IV is generated automatically. To use your own: serpent_cbc_encrypt(key, plaintext, iv=your_iv)
+ciphertext = serpent_cbc_encrypt(key, plaintext)
 decrypted = serpent_cbc_decrypt(key, ciphertext)
 
 print(decrypted.decode())

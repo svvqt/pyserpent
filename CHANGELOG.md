@@ -1,7 +1,5 @@
 # Changelog
 
-# Changelog
-
 ## [1.2.0] - 2026-03-29
 
 ### Breaking Changes
